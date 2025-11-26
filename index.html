@@ -8,42 +8,38 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #fbc2eb 100%);
     font-family: 'Arial', sans-serif;
-    color: #fff;
   }
 
   #hint {
     position: absolute;
-    top: 20px;
+    top: 30px;
     width: 100%;
     text-align: center;
-    font-size: 24px;
+    font-size: 36px;
+    font-weight: bold;
     color: #00ffff;
-    text-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
     pointer-events: none;
-    animation: fadeOut 5s forwards;
   }
 
-  @keyframes fadeOut {
-    0% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  #heart {
+  #heartBtn {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     width: 150px;
     height: 150px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Heart_corazon.svg/1200px-Heart_corazon.svg.png') no-repeat center;
+    background-size: contain;
+    border: none;
     cursor: pointer;
     filter: drop-shadow(0 0 10px #ff0080) drop-shadow(0 0 20px #ff00ff);
     transition: transform 0.2s ease, filter 0.2s ease;
   }
 
-  #heart:hover {
+  #heartBtn:hover {
     transform: translate(-50%, -50%) scale(1.2);
     filter: drop-shadow(0 0 20px #ff0080) drop-shadow(0 0 40px #ff00ff);
   }
@@ -67,11 +63,13 @@
 </head>
 <body>
 
-<div id="hint">Тикни на серце!</div>
-<img id="heart" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Heart_corazon.svg/1200px-Heart_corazon.svg.png" alt="Heart">
+<div id="hint">Тикай на серце</div>
+<button id="heartBtn"></button>
 
 <script>
-  const heart = document.getElementById('heart');
+  const heartBtn = document.getElementById('heartBtn');
+  const hint = document.getElementById('hint');
+
   const phrases = [
     "Ти неймовірна!",
     "Красуня, як завжди!",
@@ -99,10 +97,11 @@
     "Ти надзвичайно приємна!",
     "Ти даруєш світло і тепло!"
   ];
+
   const emojis = ["💖","🌸","✨","🌷","🥰","🌟","💐","💫","🌈","🌹"];
 
-  heart.addEventListener('click', () => {
-    document.getElementById('hint').style.display = 'none';
+  heartBtn.addEventListener('click', () => {
+    hint.style.display = 'none';
 
     const phrase = document.createElement('div');
     phrase.className = 'phrase';
@@ -110,7 +109,7 @@
     const emoji = emojis[Math.floor(Math.random() * emojis.length)];
     phrase.textContent = `${emoji} ${text} ${emoji}`;
 
-    const rect = heart.getBoundingClientRect();
+    const rect = heartBtn.getBoundingClientRect();
     phrase.style.left = `${rect.left + rect.width/2 - 50}px`;
     phrase.style.top = `${rect.top - 20}px`;
 
@@ -118,7 +117,7 @@
     const angle = Math.random() * 2 * Math.PI;
     const distance = 150 + Math.random() * 50;
     const x = Math.cos(angle) * distance + "px";
-    const y = Math.sin(angle) * distance * -1 + "px"; // вверх
+    const y = Math.sin(angle) * distance * -1 + "px";
     phrase.style.setProperty('--x', x);
     phrase.style.setProperty('--y', y);
 
@@ -128,9 +127,10 @@
       phrase.remove();
     }, 1500);
 
-    heart.style.transform = 'translate(-50%, -50%) scale(1.3)';
+    // Пульсація серця
+    heartBtn.style.transform = 'translate(-50%, -50%) scale(1.3)';
     setTimeout(() => {
-      heart.style.transform = 'translate(-50%, -50%) scale(1)';
+      heartBtn.style.transform = 'translate(-50%, -50%) scale(1)';
     }, 200);
   });
 </script>
