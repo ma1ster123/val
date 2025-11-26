@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>♥️</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #ff7aa5, #ff4f8b, #b3005a);
+    font-family: Arial, sans-serif;
+  }
+
+  #hint {
+    position: fixed;
+    top: 5%;
+    width: 100%;
+    text-align: center;
+    font-size: 5vw;
+    font-weight: bold;
+    color: #00eaff;
+    text-shadow: 0 0 10px #00eaff;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  #heart {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 50vw; 
+    height: 50vw; 
+    max-width: 300px;
+    max-height: 300px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #heart svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .pulse {
+    animation: pulseAnim 0.3s ease-out;
+  }
+
+  @keyframes pulseAnim {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    40% { transform: translate(-50%, -50%) scale(1.25); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+
+  .phrase {
+    position: fixed;
+    font-size: 4vw;
+    font-weight: bold;
+    color: #ffd9f6;
+    text-shadow: 0 0 10px #ff2adf;
+    pointer-events: none;
+    white-space: nowrap;
+    animation: float 3s forwards;
+  }
+
+  @keyframes float {
+    0% { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.7); }
+  }
+</style>
+</head>
+<body>
+
+<div id="hint">Тикай на серце</div>
+
+<div id="heart">
+  <svg viewBox="0 0 100 100">
+    <path d="M50 80 
+             C20 58, 5 40, 18 24 
+             C30 10, 50 18, 50 32 
+             C50 18, 70 10, 82 24 
+             C95 40, 80 58, 50 80 Z"
+          fill="#ff1cb5"/>
+  </svg>
+</div>
+
+<script>
+  const heart = document.getElementById('heart');
+  const hint = document.getElementById('hint');
+
+  let lastPhrase = "";
+  let beforeLastPhrase = "";
+
+  const phrases = [
+    "Ти дуже мила",
+    "Ти гарна",
+    "Ти чарівна",
+    "Ти прекрасна",
+    "Ти мілашна",
+    "Ти особлива",
+    "Ти чудова",
+    "Ти яскрава",
+    "Ти сонячна",
+    "Ти мрійлива",
+    "Ти добра",
+    "Ти красуня",
+    "Ти мілашка",
+    "Ти неймовірна",
+    "Твоя усмішка сяє",
+    "У тебе гарні очі",
+    "Твої очі сяють",
+    "Ти мила",
+  ];
+
+  const emojis = ["💖","🌸","✨","🌷","🥰","🌟","💐","💫"];
+
+  function getPhrase() {
+    let phrase;
+    let tries = 0;
+    do {
+      phrase = phrases[Math.floor(Math.random() * phrases.length)];
+      tries++;
+    } while ((phrase === lastPhrase || phrase === beforeLastPhrase) && tries < 10);
+
+    beforeLastPhrase = lastPhrase;
+    lastPhrase = phrase;
+    return phrase;
+  }
+
+  heart.addEventListener('click', () => {
+    hint.style.display = 'none';
+
+    const phrase = document.createElement('div');
+    phrase.className = 'phrase';
+
+    const text = getPhrase();
+    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    phrase.textContent = `${emoji} ${text} ${emoji}`;
+
+    const rect = heart.getBoundingClientRect();
+    phrase.style.left = `${rect.left + rect.width/2 - 40}px`;
+    phrase.style.top = `${rect.top - 20}px`;
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 80 + Math.random() * 60;
+
+    phrase.style.setProperty('--x', Math.cos(angle) * distance + "px");
+    phrase.style.setProperty('--y', Math.sin(angle) * distance * -1 + "px");
+
+    document.body.appendChild(phrase);
+
+    setTimeout(() => phrase.remove(), 3000);
+
+    heart.classList.remove("pulse");
+    void heart.offsetWidth;
+    heart.classList.add("pulse");
+  });
+</script>
+
+</body>
+</html>
