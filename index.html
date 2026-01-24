@@ -1,167 +1,331 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>♥️</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    background: radial-gradient(circle at center, #ff7aa5, #ff4f8b, #b3005a);
-    font-family: Arial, sans-serif;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для моєї коханої</title>
+    <script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap');
 
-  #hint {
-    position: fixed;
-    top: 5%;
-    width: 100%;
-    text-align: center;
-    font-size: 5vw;
-    font-weight: bold;
-    color: #00eaff;
-    text-shadow: 0 0 10px #00eaff;
-    user-select: none;
-    pointer-events: none;
-  }
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff8fa3;
+            --bg: #fff0f3;
+            --text: #590d22;
+        }
 
-  #heart {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    width: 50vw; 
-    height: 50vw; 
-    max-width: 300px;
-    max-height: 300px;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-  }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text);
+        }
 
-  #heart svg {
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
+        /* Ефект сердечок при кліку */
+        .click-effect {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('https://htmlku.com/0/panda/love.png') no-repeat center/cover;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 9999;
+        }
 
-  .pulse {
-    animation: pulseAnim 0.3s ease-out;
-  }
+        @keyframes floatUp {
+            0% { transform: scale(1) translateY(0); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+        }
 
-  @keyframes pulseAnim {
-    0% { transform: translate(-50%, -50%) scale(1); }
-    40% { transform: translate(-50%, -50%) scale(1.25); }
-    100% { transform: translate(-50%, -50%) scale(1); }
-  }
+        /* Конверт */
+        #envelope-wrapper {
+            position: absolute;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.8s ease;
+        }
 
-  .phrase {
-    position: fixed;
-    font-size: 4vw;
-    font-weight: bold;
-    color: #ffd9f6;
-    text-shadow: 0 0 10px #ff2adf;
-    pointer-events: none;
-    white-space: nowrap;
-    animation: float 3s forwards;
-  }
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background: #ff758f;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        
+        .envelope::before { /* Клапан конверта */
+            content: '';
+            position: absolute;
+            top: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #ff4d6d;
+            transform-origin: top;
+            transition: transform 0.5s;
+            z-index: 5;
+        }
 
-  @keyframes float {
-    0% { opacity: 1; transform: translate(0,0) scale(1); }
-    100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.7); }
-  }
-</style>
+        .envelope.open::before {
+            transform: rotateX(180deg);
+        }
+
+        .heart-seal {
+            font-size: 50px;
+            color: white;
+            z-index: 6;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+        }
+
+        #open-btn {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            transition: transform 0.2s;
+        }
+
+        #open-btn:active { transform: scale(0.95); }
+
+        /* Основний контент */
+        .container {
+            display: none; /* Приховано спочатку */
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 1s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .container.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .stiker {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .stiker img { width: 100%; height: 100%; object-fit: contain; }
+
+        .titleC {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .messageC {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .fontAlt {
+            font-weight: bold;
+            color: var(--primary);
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+        }
+
+        /* Прихований плеєр */
+        #bg-music { display: none; }
+        
+        /* Анімація фону (плаваючі елементи) */
+        .bg-shapes {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .shape {
+            position: absolute;
+            bottom: -50px;
+            background: rgba(255, 77, 109, 0.2);
+            border-radius: 50%;
+            animation: floatShape 15s infinite linear;
+        }
+        @keyframes floatShape {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+    </style>
 </head>
 <body>
 
-<div id="hint">Тикай на серце</div>
+    <audio id="bg-music" loop>
+        <source src="https://files.catbox.moe/39567y.mp3" type="audio/mpeg">
+    </audio>
 
-<div id="heart">
-  <svg viewBox="0 0 100 100">
-    <path d="M50 80 
-             C20 58, 5 40, 18 24 
-             C30 10, 50 18, 50 32 
-             C50 18, 70 10, 82 24 
-             C95 40, 80 58, 50 80 Z"
-          fill="#ff1cb5"/>
-  </svg>
-</div>
+    <div class="bg-shapes" id="bg-shapes"></div>
 
-<script>
-  const heart = document.getElementById('heart');
-  const hint = document.getElementById('hint');
+    <div id="envelope-wrapper">
+        <div class="envelope" id="envelope">
+            <div class="heart-seal">💌</div>
+        </div>
+        <button id="open-btn">Відкрити лист ❤️</button>
+    </div>
 
-  let lastPhrase = "";
-  let beforeLastPhrase = "";
+    <div class="container" id="container">
+        <div class="stiker">
+            <img id="main-stiker" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXN5eHYzYjZ5Y3B4Y3B4Y3B4Y3B4Y3B4Y3B4Y3B4/26BRv0ThflsKCqMIg/giphy.gif" alt="Cute Bear">
+        </div>
+        
+        <p class="titleC"></p>
+        <p class="messageC"></p>
+    </div>
 
-  const phrases = [
-    "Ти дуже мила",
-    "Ти гарна",
-    "Ти чарівна",
-    "Ти прекрасна",
-    "Ти мілашна",
-    "Ти особлива",
-    "Ти чудова",
-    "Ти яскрава",
-    "Ти сонячна",
-    "Ти мрійлива",
-    "Ти добра",
-    "Ти красуня",
-    "Ти мілашка",
-    "Ти неймовірна",
-    "Твоя усмішка сяє",
-    "У тебе гарні очі",
-    "Твої очі сяють",
-    "Ти мила",
-  ];
+    <script>
+        // 1. НАЛАШТУВАННЯ ТЕКСТУ ТА ІМЕНІ
+        // Змініть ім'я 'Яна' на потрібне, якщо я помилився
+        const name = "Яна"; 
+        const titleText = `Привіт, моя ${name}! 🫣💗`;
+        
+        // Тут текст привітання. <br> це перенос рядка.
+        const messages = [
+            "З Днем святого Валентина! 🌹",
+            "Я довго думав, як це сказати, але слова іноді губляться...",
+            "Ти — найкраще, що трапилося в моєму житті. Твоя усмішка змушує моє серце битися частіше, а твій голос — найулюбленіша мелодія. 🥰",
+            "Навіть коли ми не поруч, я відчуваю твоє тепло. Дякую тобі за те, що ти є, за твою ніжність і підтримку.",
+            "Хочу, щоб ти знала: я завжди буду поруч, щоб обійняти, вислухати й розсмішити.",
+            "<br><b>Я тебе дуже сильно кохаю!</b> ❤️",
+            "<br><i class='fontAlt'>З любов'ю, твій хлопчик 💋</i>"
+        ];
 
-  const emojis = ["💖","🌸","✨","🌷","🥰","🌟","💐","💫"];
+        // Посилання на картинки (можна змінити)
+        // Стікер, коли відкривається лист
+        const sticker1 = "https://media.giphy.com/media/26BRv0ThflsKCqMIg/giphy.gif"; 
+        // Стікер в кінці (поцілунок або сердечка)
+        const sticker2 = "https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif"; 
 
-  function getPhrase() {
-    let phrase;
-    let tries = 0;
-    do {
-      phrase = phrases[Math.floor(Math.random() * phrases.length)];
-      tries++;
-    } while ((phrase === lastPhrase || phrase === beforeLastPhrase) && tries < 10);
+        // ---------------------------------------------------------
+        // ЛОГІКА СКРИПТА (краще не чіпати, якщо не знаєте JS)
+        
+        const envelopeWrapper = document.getElementById('envelope-wrapper');
+        const envelope = document.getElementById('envelope');
+        const btnOpen = document.getElementById('open-btn');
+        const container = document.getElementById('container');
+        const music = document.getElementById('bg-music');
+        const mainStiker = document.getElementById('main-stiker');
 
-    beforeLastPhrase = lastPhrase;
-    lastPhrase = phrase;
-    return phrase;
-  }
+        // Ефект кліку (сердечка)
+        document.addEventListener("click", function (e) {
+            const circle = document.createElement("div");
+            circle.classList.add("click-effect");
+            circle.style.left = `${e.pageX}px`;
+            circle.style.top = `${e.pageY}px`;
+            document.body.appendChild(circle);
+            circle.addEventListener("animationend", () => circle.remove());
+        });
 
-  heart.addEventListener('click', () => {
-    hint.style.display = 'none';
+        // Функція відкриття
+        function openLetter() {
+            // Спроба запустити музику (браузери блокують автоплей без взаємодії)
+            music.play().catch(error => console.log("Music play failed:", error));
 
-    const phrase = document.createElement('div');
-    phrase.className = 'phrase';
+            envelope.classList.add("open");
+            
+            setTimeout(() => {
+                // Ховаємо конверт
+                envelopeWrapper.style.transform = "scale(0)";
+                envelopeWrapper.style.opacity = "0";
+                
+                setTimeout(() => {
+                    envelopeWrapper.style.display = "none";
+                    container.classList.add("show");
+                    startTyping(); // Починаємо друкувати текст
+                }, 500);
+            }, 800);
+        }
 
-    const text = getPhrase();
-    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-    phrase.textContent = `${emoji} ${text} ${emoji}`;
+        envelope.addEventListener('click', openLetter);
+        btnOpen.addEventListener('click', openLetter);
 
-    const rect = heart.getBoundingClientRect();
-    phrase.style.left = `${rect.left + rect.width/2 - 40}px`;
-    phrase.style.top = `${rect.top - 20}px`;
+        // Анімація тексту (TypeIt)
+        function startTyping() {
+            new TypeIt(".titleC", {
+                strings: [titleText],
+                speed: 50,
+                waitUntilVisible: true,
+                afterComplete: function (instance) {
+                    instance.destroy(); // Прибираємо курсор з заголовка
+                    typeMessage();      // Запускаємо основний текст
+                }
+            }).go();
+        }
 
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 80 + Math.random() * 60;
+        function typeMessage() {
+            const typeItMsg = new TypeIt(".messageC", {
+                speed: 40,
+                startDelay: 500,
+                lifeLike: true,
+                waitUntilVisible: true
+            });
 
-    phrase.style.setProperty('--x', Math.cos(angle) * distance + "px");
-    phrase.style.setProperty('--y', Math.sin(angle) * distance * -1 + "px");
+            // Додаємо кожен рядок з масиву
+            messages.forEach((line) => {
+                typeItMsg.type(line).pause(700).break();
+            });
 
-    document.body.appendChild(phrase);
+            typeItMsg.go().then(() => {
+                // В кінці змінюємо стікер
+                changeSticker();
+            });
+        }
 
-    setTimeout(() => phrase.remove(), 3000);
+        function changeSticker() {
+            mainStiker.style.transform = "scale(0)";
+            setTimeout(() => {
+                mainStiker.src = sticker2;
+                mainStiker.style.transform = "scale(1.2)";
+                startConfetti(); // Можна додати конфетті (опціонально)
+            }, 300);
+        }
 
-    heart.classList.remove("pulse");
-    void heart.offsetWidth;
-    heart.classList.add("pulse");
-  });
-</script>
+        // Генерація фонових кульок
+        const bgShapes = document.getElementById('bg-shapes');
+        for(let i=0; i<15; i++){
+            let div = document.createElement('div');
+            div.classList.add('shape');
+            div.style.left = Math.random() * 100 + '%';
+            div.style.width = Math.random() * 30 + 10 + 'px';
+            div.style.height = div.style.width;
+            div.style.animationDuration = Math.random() * 10 + 5 + 's';
+            div.style.animationDelay = Math.random() * 5 + 's';
+            bgShapes.appendChild(div);
+        }
 
+    </script>
 </body>
 </html>
