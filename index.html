@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Для моєї коханої</title>
-    <script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js"></script>
+    <title>Для Яни ❤️</title>
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 
         :root {
-            --primary: #ff4d6d;
-            --secondary: #ff8fa3;
-            --bg: #fff0f3;
-            --text: #590d22;
+            --pink: #ff4d6d;
+            --bg: #ffeef2;
         }
 
         body {
@@ -25,305 +23,259 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: var(--text);
+            user-select: none;
         }
 
-        /* Ефект сердечок при кліку */
+        /* Анімація фону (квадратики/кульки як в оригіналі) */
+        .box {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .box div {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            border: 6px solid rgba(255, 77, 109, 0.2);
+            border-radius: 50%; /* Зробив круглими для ніжності, якщо хочеш квадрати - прибери це */
+            bottom: -100px; /* Старт знизу */
+            animation: animate 10s linear infinite;
+        }
+
+        .box div:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .box div:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .box div:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .box div:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .box div:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .box div:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .box div:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .box div:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .box div:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .box div:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+        @keyframes animate {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Ефект кліку (з твого коду) */
         .click-effect {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background: url('https://htmlku.com/0/panda/love.png') no-repeat center/cover;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--pink);
             pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
+            animation: ripple 0.6s linear forwards;
             z-index: 9999;
         }
 
-        @keyframes floatUp {
-            0% { transform: scale(1) translateY(0); opacity: 1; }
-            100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
         }
 
-        /* Конверт */
-        #envelope-wrapper {
+        /* Кнопка "Відкрити" */
+        .reset {
             position: absolute;
             z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.8s ease;
         }
 
-        .envelope {
-            width: 300px;
-            height: 200px;
-            background: #ff758f;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        #open {
+            background-color: var(--pink);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+            transition: transform 0.2s;
         }
-        
-        .envelope::before { /* Клапан конверта */
-            content: '';
+        #open:active { transform: scale(0.9); }
+
+        /* Контейнер повідомлення */
+        .container {
             position: absolute;
-            top: 0;
-            border-left: 150px solid transparent;
-            border-right: 150px solid transparent;
-            border-top: 110px solid #ff4d6d;
-            transform-origin: top;
-            transition: transform 0.5s;
+            width: 85%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            display: none; /* Сховано спочатку */
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
             z-index: 5;
         }
 
-        .envelope.open::before {
-            transform: rotateX(180deg);
-        }
-
-        .heart-seal {
-            font-size: 50px;
-            color: white;
-            z-index: 6;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
-        }
-
-        #open-btn {
-            margin-top: 30px;
-            padding: 12px 30px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
-            transition: transform 0.2s;
-        }
-
-        #open-btn:active { transform: scale(0.95); }
-
-        /* Основний контент */
-        .container {
-            display: none; /* Приховано спочатку */
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            opacity: 0;
-            transition: opacity 1s ease;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .container.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .stiker {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-        }
-        
-        .stiker img { width: 100%; height: 100%; object-fit: contain; }
-
         .titleC {
-            font-family: 'Dancing Script', cursive;
-            font-size: 32px;
-            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--pink);
             margin-bottom: 10px;
         }
 
         .messageC {
             font-size: 16px;
-            line-height: 1.6;
-            color: #444;
+            color: #333;
+            line-height: 1.5;
+            min-height: 100px;
         }
 
-        .fontAlt {
-            font-weight: bold;
-            color: var(--primary);
-            font-family: 'Dancing Script', cursive;
-            font-size: 24px;
+        /* Стікери */
+        .stiker {
+            margin-bottom: 15px;
+            transition: all 0.5s ease;
+        }
+        .stiker img {
+            width: 120px;
+            height: auto;
         }
 
-        /* Прихований плеєр */
-        #bg-music { display: none; }
-        
-        /* Анімація фону (плаваючі елементи) */
-        .bg-shapes {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden;
-            z-index: -1;
+        /* Клас для анімації появи контейнера */
+        .opamuncul {
+            display: block !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
         }
-        .shape {
-            position: absolute;
-            bottom: -50px;
-            background: rgba(255, 77, 109, 0.2);
-            border-radius: 50%;
-            animation: floatShape 15s infinite linear;
-        }
-        @keyframes floatShape {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
+
+        .hidden { display: none; }
 
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop>
+    <audio id="musik" loop>
         <source src="https://files.catbox.moe/39567y.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="bg-shapes" id="bg-shapes"></div>
+    <div class="box">
+        <div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div>
+    </div>
 
-    <div id="envelope-wrapper">
-        <div class="envelope" id="envelope">
-            <div class="heart-seal">💌</div>
-        </div>
-        <button id="open-btn">Відкрити лист ❤️</button>
+    <div class="reset">
+        <button id="open">Відкрити лист ❤️</button>
     </div>
 
     <div class="container" id="container">
         <div class="stiker">
-            <img id="main-stiker" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXN5eHYzYjZ5Y3B4Y3B4Y3B4Y3B4Y3B4Y3B4Y3B4/26BRv0ThflsKCqMIg/giphy.gif" alt="Cute Bear">
+            <img id="main-stiker" src="https://htmlku.com/0/panda/pusn.gif" />
         </div>
-        
+
         <p class="titleC"></p>
         <p class="messageC"></p>
     </div>
 
     <script>
-        // 1. НАЛАШТУВАННЯ ТЕКСТУ ТА ІМЕНІ
-        // Змініть ім'я 'Яна' на потрібне, якщо я помилився
-        const name = "Яна"; 
-        const titleText = `Привіт, моя ${name}! 🫣💗`;
-        
-        // Тут текст привітання. <br> це перенос рядка.
-        const messages = [
+        // ТЕКСТ (Редагувати тут)
+        const name = "Яна";
+        const titleText = "Привіт, моя " + name + "! 🫣💗";
+
+        // Це текст, який буде друкуватися
+        // <br> означає новий рядок
+        const finalMessage = [
             "З Днем святого Валентина! 🌹",
-            "Я довго думав, як це сказати, але слова іноді губляться...",
-            "Ти — найкраще, що трапилося в моєму житті. Твоя усмішка змушує моє серце битися частіше, а твій голос — найулюбленіша мелодія. 🥰",
-            "Навіть коли ми не поруч, я відчуваю твоє тепло. Дякую тобі за те, що ти є, за твою ніжність і підтримку.",
-            "Хочу, щоб ти знала: я завжди буду поруч, щоб обійняти, вислухати й розсмішити.",
+            "Я знаю, що іноді буває важко, але ти найсильніша дівчина, яку я знаю.",
+            "Дякую тобі за те, що ти є. Твоя усмішка — це моє натхнення.",
+            "Я завжди буду поруч, щоб підтримати тебе, обійняти і любити.",
             "<br><b>Я тебе дуже сильно кохаю!</b> ❤️",
-            "<br><i class='fontAlt'>З любов'ю, твій хлопчик 💋</i>"
+            "<br><i>Твій коханий</i> 😘"
         ];
 
-        // Посилання на картинки (можна змінити)
-        // Стікер, коли відкривається лист
-        const sticker1 = "https://media.giphy.com/media/26BRv0ThflsKCqMIg/giphy.gif"; 
-        // Стікер в кінці (поцілунок або сердечка)
-        const sticker2 = "https://media.giphy.com/media/l4pTfx2qLszoacZRS/giphy.gif"; 
-
-        // ---------------------------------------------------------
-        // ЛОГІКА СКРИПТА (краще не чіпати, якщо не знаєте JS)
-        
-        const envelopeWrapper = document.getElementById('envelope-wrapper');
-        const envelope = document.getElementById('envelope');
-        const btnOpen = document.getElementById('open-btn');
+        // ЗМІННІ
+        const btnOpen = document.getElementById('open');
         const container = document.getElementById('container');
-        const music = document.getElementById('bg-music');
+        const stikerDiv = document.querySelector('.stiker');
         const mainStiker = document.getElementById('main-stiker');
+        const audio = document.getElementById('musik');
+        const resetDiv = document.querySelector('.reset');
+        
+        // Посилання на картинки
+        const stiker1 = "https://htmlku.com/0/panda/pusn.gif";
+        const stiker2 = "https://htmlku.com/0/panda/muah.gif";
 
-        // Ефект кліку (сердечка)
+        // ЕФЕКТ КЛІКУ (з твого коду)
         document.addEventListener("click", function (e) {
             const circle = document.createElement("div");
             circle.classList.add("click-effect");
-            circle.style.left = `${e.pageX}px`;
-            circle.style.top = `${e.pageY}px`;
+            circle.style.left = e.pageX + "px";
+            circle.style.top = e.pageY + "px";
             document.body.appendChild(circle);
-            circle.addEventListener("animationend", () => circle.remove());
+            circle.addEventListener("animationend", () => { circle.remove(); });
         });
 
-        // Функція відкриття
-        function openLetter() {
-            // Спроба запустити музику (браузери блокують автоплей без взаємодії)
-            music.play().catch(error => console.log("Music play failed:", error));
-
-            envelope.classList.add("open");
+        // ФУНКЦІЯ ВІДКРИТТЯ
+        btnOpen.addEventListener('click', function() {
+            // 1. Граємо музику
+            audio.play().catch(e => console.log("Треба взаємодія для музики"));
             
-            setTimeout(() => {
-                // Ховаємо конверт
-                envelopeWrapper.style.transform = "scale(0)";
-                envelopeWrapper.style.opacity = "0";
-                
-                setTimeout(() => {
-                    envelopeWrapper.style.display = "none";
-                    container.classList.add("show");
-                    startTyping(); // Починаємо друкувати текст
-                }, 500);
-            }, 800);
-        }
+            // 2. Ховаємо кнопку
+            resetDiv.style.transition = "all .6s ease";
+            resetDiv.style.transform = "scale(0)";
+            resetDiv.style.opacity = "0";
 
-        envelope.addEventListener('click', openLetter);
-        btnOpen.addEventListener('click', openLetter);
+            // 3. Показуємо контейнер із затримкою
+            setTimeout(function() {
+                container.classList.add('opamuncul');
+                // Запускаємо друк заголовка
+                katanimasi();
+            }, 600);
+        });
 
-        // Анімація тексту (TypeIt)
-        function startTyping() {
+        // ДРУК ЗАГОЛОВКА
+        function katanimasi() {
             new TypeIt(".titleC", {
                 strings: [titleText],
-                speed: 50,
-                waitUntilVisible: true,
-                afterComplete: function (instance) {
-                    instance.destroy(); // Прибираємо курсор з заголовка
-                    typeMessage();      // Запускаємо основний текст
+                startDelay: 250,
+                speed: 60,
+                cursor: false,
+                afterComplete: function() {
+                    // Після заголовка запускаємо основний текст
+                    katanimasiAlts();
                 }
             }).go();
         }
 
-        function typeMessage() {
-            const typeItMsg = new TypeIt(".messageC", {
+        // ДРУК ОСНОВНОГО ТЕКСТУ
+        function katanimasiAlts() {
+            new TypeIt(".messageC", {
+                strings: finalMessage,
+                startDelay: 400,
                 speed: 40,
-                startDelay: 500,
-                lifeLike: true,
-                waitUntilVisible: true
-            });
-
-            // Додаємо кожен рядок з масиву
-            messages.forEach((line) => {
-                typeItMsg.type(line).pause(700).break();
-            });
-
-            typeItMsg.go().then(() => {
-                // В кінці змінюємо стікер
-                changeSticker();
-            });
+                cursor: true,
+                breakLines: true,
+                waitUntilVisible: true,
+                afterStep: function(instance) {
+                    // Пауза між реченнями (опціонально)
+                },
+                afterComplete: function() {
+                    // Коли текст закінчився:
+                    document.querySelector(".ti-cursor").style.display = "none";
+                    // Міняємо стікер
+                    changeSticker();
+                }
+            }).go();
         }
 
+        // ЗМІНА СТІКЕРА (Анімація scale)
         function changeSticker() {
-            mainStiker.style.transform = "scale(0)";
+            stikerDiv.style.transform = "scale(0)";
             setTimeout(() => {
-                mainStiker.src = sticker2;
-                mainStiker.style.transform = "scale(1.2)";
-                startConfetti(); // Можна додати конфетті (опціонально)
+                mainStiker.src = stiker2; // Міняємо картинку
+                stikerDiv.style.transform = "scale(1.2)"; // Збільшуємо
             }, 300);
-        }
-
-        // Генерація фонових кульок
-        const bgShapes = document.getElementById('bg-shapes');
-        for(let i=0; i<15; i++){
-            let div = document.createElement('div');
-            div.classList.add('shape');
-            div.style.left = Math.random() * 100 + '%';
-            div.style.width = Math.random() * 30 + 10 + 'px';
-            div.style.height = div.style.width;
-            div.style.animationDuration = Math.random() * 10 + 5 + 's';
-            div.style.animationDelay = Math.random() * 5 + 's';
-            bgShapes.appendChild(div);
         }
 
     </script>
